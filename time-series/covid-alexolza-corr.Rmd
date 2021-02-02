@@ -93,9 +93,7 @@ de la infección: afirma que la disnea (dificultad respiratoria) aparece
 en los casos graves con un retraso de 5-8 días, y que los casos críticos llegaron a serlo tras
 un tiempo de desarrollo de 8-12 días. Para este trabajo se han tomado retardos menores, con la intención
 de mantener un vector de estado de tamaño razonable y no tener que estimar demasiados parámetros. 
-La decisión se ha tomado considerando que un modelo con tendencia lineal local para $\alpha_t$
-  es más 
-adecuado que un paseo aleatorio. 
+La decisión se ha tomado considerando que un modelo con tendencia lineal local para $\alpha_t$ es más adecuado que un paseo aleatorio. 
 
 ```{r}
 fraccion_criticos<-0.05
@@ -104,9 +102,7 @@ fraccion_graves<-0.14
 
 Por otra parte, se ha tenido en cuenta que, según la definición de $R_0$ propia de los modelos compartimentales
 (SIR y derivados), cada persona infectada contagia a su vez a otras $R_0$ personas en promedio. 
-Este parámetro
-es variable en el tiempo, ya que depende tanto de la infectividad del virus como de factores
-demográficos y sociológicos (por ejemplo, las restricciones de movilidad).
+Este parámetro es variable en el tiempo, ya que depende tanto de la infectividad del virus como de factores demográficos y sociológicos (por ejemplo, las restricciones de movilidad).
 
 Teniendo en cuenta estas consideraciones, las ecuaciones de observación propuestas son las siguientes:
   
@@ -223,8 +219,7 @@ k_3&0&0&0&0&0&0&0&0.05k_4R_{0}&0&0.05(1-k_4) R_{0}&0\\
 \end{bmatrix}
 +\vec{\epsilon_t}$$
   
-donde $k_i=\frac{1}{1+e^{-C_i}}\quad \forall i\neq1,3$, para asegurar que $0\leq k_i\leq 1$. Las matrices de varianzas-covarianzas de los ruidos se consideran
-diagonales, con términos de tipo $e^{C_i}$ donde $i=3,...,14$ para el ruido del estado y $i=15,16$ 
+donde $k_i=\frac{1}{1+e^{-C_i}}\quad \forall i\neq1,3$, para asegurar que $0\leq k_i\leq 1$. Las matrices de varianzas-covarianzas de los ruidos se consideran diagonales, con términos de tipo $e^{C_i}$ donde $i=5,6$ para el ruido del estado y $i=7,8$ 
 para las observaciones. También se da como nivel inicial del estado un vector de 12 ceros, y como
 varianza inicial una matriz $C_0$ a priori difusa.
 
@@ -248,8 +243,8 @@ crearMod <- function(x) {
                       rep(0,7),1,rep(0,4),
                       rep(0,8),1,rep(0,3),
                       rep(0,9),1,0,0),nrow=12,ncol=12,byrow=T)
-  modelo$FF<-matrix(c(exp(x[7]),0,0,0,0,0,1,0,1,0,0,0,
-                      exp(x[8]),0,0,0,0,0,0,0,1,0,1,0),nrow=2,ncol =12,byrow = T)
+  modelo$FF<-matrix(c(exp(x[3]),0,0,0,0,0,1,0,1,0,0,0,
+                      exp(x[4]),0,0,0,0,0,0,0,1,0,1,0),nrow=2,ncol =12,byrow = T)
   modelo$JFF<-matrix(c(0,0,0,0,0,0,1,0,2,0,0,0,
                       0,0,0,0,0,0,0,0,3,0,4,0),nrow=2,ncol =12,byrow = T)
   modelo$X<-matrix(merge((1/(1+exp(-x[1])))*fraccion_graves*covid$R0,
@@ -259,7 +254,7 @@ crearMod <- function(x) {
                    ncol=4,nrow=nrow(covid))
   modelo$m0<-matrix(rep(0,12),1,12)
   modelo$C0<-diag(1e7,12,12)
-  modelo$W<-diag(c(exp(x[3]),exp(x[4]),rep(0,10)),
+  modelo$W<-diag(c(exp(x[7]),exp(x[8]),rep(0,10)),
                  12,12)
   modelo$V<-diag(c(exp(x[5]),exp(x[6])),2,2)
   return(modelo)
@@ -279,7 +274,7 @@ modelo_ajustado
 \normalsize
 
 Según los datos hospitalarios de los que disponemos, si asumimos las ecuaciones que hemos planteado
-como correctas, lo más verosímil es que, entre el 14% de pacientes que ingresan con retraso en planta, prácticamente todos ellos ($97.3\%$)lo hagan
+como correctas, lo más verosímil es que, entre el 14% de pacientes que ingresan con retraso en planta, el 76.3% lo hagan
 en el día $t-3$ y los demás en el día $t-4$. Así mismo, entre el 5% que ingresa con retraso en la UCI, el resultado
 de la estimación máximo-verosímil es que el 17.8% presenta una gravedad crítica tras 4 días, y el resto empeora más tarde ($t-5$). 
   
@@ -334,7 +329,7 @@ include_graphics("./infectados.png")
 Vemos que los infectados presentan la estructura de olas propia de esta pandemia. La primera ola presenta una curvatura extraña, ya que en esas fechas sólo tenemos datos de $R_0$.
 
 
-## 3.4) Comentarios sobre los resultados
+## 3.3) Comentarios sobre los resultados
 
 Como ya hemos comentado, el número de infectados es imposible de medir. Sin embargo, 
 en la siguiente figura podemos ver que el perfil de nuevas PCR positivas sigue
